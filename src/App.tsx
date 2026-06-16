@@ -12,7 +12,7 @@ import {
   ActiveOrder,
   CustomerProfile
 } from "./types";
-import { KurirLoginScreen } from "./components/LoginScreen";
+import { LoginScreen } from "./components/LoginScreen";
 import { RegisterScreen } from "./components/RegisterScreen";
 import { SuccessScreen } from "./components/SuccessScreen";
 import { DashboardScreen } from "./components/DashboardScreen";
@@ -151,7 +151,7 @@ export default function App() {
       <MobileFrame>
         <AnimatePresence mode="wait">
           {currentScreen === ScreenType.KURIR_LOGIN && (
-            <KurirLoginScreen
+            <LoginScreen
               key="kurir-login"
               onRegisterClick={() => setCurrentScreen(ScreenType.REGISTER)}
               onLoginSuccess={handleKurirLoginSuccess}

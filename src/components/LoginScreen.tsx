@@ -8,13 +8,13 @@ import { User, Lock, Eye, EyeOff, ChevronRight, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { CustomerProfile } from "../types";
 
-interface KurirLoginScreenProps {
+interface LoginScreenProps {
   onRegisterClick: () => void;
   onLoginSuccess: (kurirId: string) => void;
   registeredProfile: CustomerProfile | null;
 }
 
-export const KurirLoginScreen: React.FC<KurirLoginScreenProps> = ({
+export const LoginScreen: React.FC<LoginScreenProps> = ({
   onRegisterClick,
   onLoginSuccess,
   registeredProfile,

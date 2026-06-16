@@ -9,13 +9,11 @@ import { motion } from "motion/react";
 
 interface SuccessScreenProps {
   onProceed: () => void;
-  onLetssGo: () => void;
   onContactCS: () => void;
 }
 
 export const SuccessScreen: React.FC<SuccessScreenProps> = ({
   onProceed,
-  onLetssGo,
   onContactCS,
 }) => {
   return (
@@ -76,15 +74,6 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({
         >
           <span>Login Sekarang</span>
           <ArrowRight className="w-4 h-4 mt-[1.5px]" />
-        </button>
-
-        {/* Button 2: Letss Goooo */}
-        <button
-          onClick={onLetssGo}
-          className="w-full h-12 rounded-xl bg-[#d2f3ff] hover:bg-[#b0ebff] text-[#0060ff] font-bold text-[14px] flex items-center justify-center transition-all active:scale-[0.98]"
-          id="success-letss-go-btn"
-        >
-          Kembali ke Login
         </button>
 
         {/* CS Support link */}

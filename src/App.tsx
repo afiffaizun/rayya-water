@@ -12,7 +12,6 @@ import {
   ActiveOrder,
   CustomerProfile
 } from "./types";
-import { MobileFrame } from "./components/MobileFrame";
 import { KurirLoginScreen } from "./components/KurirLoginScreen";
 import { RegisterScreen } from "./components/RegisterScreen";
 import { SuccessScreen } from "./components/SuccessScreen";
@@ -20,10 +19,6 @@ import { DashboardScreen } from "./components/DashboardScreen";
 import { CustomerHomeTab } from "./components/CustomerHomeTab";
 import { OrderHistoryTab } from "./components/OrderHistoryTab";
 import { CustomerProfileTab } from "./components/CustomerProfileTab";
-import {
-  Droplet,
-  Info,
-} from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 export default function App() {
@@ -152,92 +147,57 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(11,92,229,0.18),rgba(255,255,255,0))] flex flex-col items-center justify-between py-6 px-4 selection:bg-brand-blue/30 overflow-hidden">
-      
-      {/* Top Title Banner */}
-      <div className="w-full max-w-6xl flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-brand-blue rounded-xl flex items-center justify-center text-white">
-            <Droplet className="w-5 h-5 fill-white" />
-          </div>
-          <div>
-            <h1 className="text-white font-extrabold text-[15px] leading-tight">Rayya Water</h1>
-            <p className="text-slate-400 text-[11px] font-semibold">Sistem Pengantaran Galon Indonesia</p>
-          </div>
-        </div>
-        
-        {/* Help Tip */}
-        <div className="hidden md:flex items-center gap-2 bg-slate-800/40 px-3 py-1.5 rounded-lg border border-slate-700/50">
-          <Info className="w-4 h-4 text-cyan-400" />
-          <span className="text-slate-300 text-[11px] font-semibold">Aplikasi Rayya Water</span>
-        </div>
-      </div>
+    <div className="h-screen w-full bg-slate-50 flex flex-col overflow-hidden">
+      <AnimatePresence mode="wait">
+        {currentScreen === ScreenType.KURIR_LOGIN && (
+          <KurirLoginScreen
+            key="kurir-login"
+            onRegisterClick={() => setCurrentScreen(ScreenType.REGISTER)}
+            onLoginSuccess={handleKurirLoginSuccess}
+            registeredProfile={profile}
+          />
+        )}
 
-      {/* Main Container */}
-      <div className="w-full max-w-6xl flex-1 flex items-center justify-center my-auto pt-2">
-        
-        {/* Phone Mockup */}
-        <div className="flex items-center justify-center w-full">
-          <MobileFrame>
-            <AnimatePresence mode="wait">
-              {currentScreen === ScreenType.KURIR_LOGIN && (
-                <KurirLoginScreen
-                  key="kurir-login"
-                  onBack={() => setCurrentScreen(ScreenType.REGISTER)}
-                  onRegisterClick={() => setCurrentScreen(ScreenType.REGISTER)}
-                  onLoginSuccess={handleKurirLoginSuccess}
-                  registeredProfile={profile}
-                />
-              )}
+        {currentScreen === ScreenType.REGISTER && (
+          <RegisterScreen
+            key="register"
+            onBack={() => setCurrentScreen(ScreenType.KURIR_LOGIN)}
+            onSuccess={handleRegisterSuccess}
+            onLoginClick={() => setCurrentScreen(ScreenType.KURIR_LOGIN)}
+          />
+        )}
 
-              {currentScreen === ScreenType.REGISTER && (
-                <RegisterScreen
-                  key="register"
-                  onBack={() => setCurrentScreen(ScreenType.KURIR_LOGIN)}
-                  onSuccess={handleRegisterSuccess}
-                  onLoginClick={() => setCurrentScreen(ScreenType.KURIR_LOGIN)}
-                />
-              )}
+        {currentScreen === ScreenType.SUCCESS && (
+          <SuccessScreen
+            key="success"
+            onProceed={() => {
+              setCurrentScreen(ScreenType.KURIR_LOGIN);
+              triggerNotification("🔑 Silakan login dengan akun yang baru dibuat.");
+            }}
+            onContactCS={handleContactCS}
+          />
+        )}
 
-              {currentScreen === ScreenType.SUCCESS && (
-                <SuccessScreen
-                  key="success"
-                  onProceed={() => {
-                    setCurrentScreen(ScreenType.KURIR_LOGIN);
-                    triggerNotification("🔑 Silakan login dengan akun yang baru dibuat.");
-                  }}
-                  onLetssGo={() => {
-                    setCurrentScreen(ScreenType.KURIR_LOGIN);
-                    triggerNotification("🔑 Silakan login dengan akun yang baru dibuat.");
-                  }}
-                  onContactCS={handleContactCS}
-                />
-              )}
-
-              {currentScreen === ScreenType.DASHBOARD && (
-                <DashboardScreen
-                  key="dashboard"
-                  profile={profile}
-                  activeOrders={orders}
-                  onPlaceOrder={handlePlaceOrder}
-                  onModifyStock={handleModifyStock}
-                  stockUnits={stockUnits}
-                  onBackToWelcome={() => setCurrentScreen(ScreenType.SUCCESS)}
-                  onLogOut={() => {
-                    setLoggedAsKurirId(null);
-                    setCurrentScreen(ScreenType.KURIR_LOGIN);
-                    triggerNotification("🚪 Berhasil Logout.");
-                  }}
-                  currentTab={currentTab}
-                  setCurrentTab={setCurrentTab}
-                  renderExtraTabsContent={renderExtraTabsContent}
-                />
-              )}
-            </AnimatePresence>
-          </MobileFrame>
-        </div>
-
-      </div>
+        {currentScreen === ScreenType.DASHBOARD && (
+          <DashboardScreen
+            key="dashboard"
+            profile={profile}
+            activeOrders={orders}
+            onPlaceOrder={handlePlaceOrder}
+            onModifyStock={handleModifyStock}
+            stockUnits={stockUnits}
+            onBackToWelcome={() => setCurrentScreen(ScreenType.SUCCESS)}
+            onLogOut={() => {
+              setLoggedAsKurirId(null);
+              setCurrentScreen(ScreenType.KURIR_LOGIN);
+              triggerNotification("🚪 Berhasil Logout.");
+            }}
+            currentTab={currentTab}
+            setCurrentTab={setCurrentTab}
+            renderExtraTabsContent={renderExtraTabsContent}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Floating System-Wide Push Notification Bubble */}
       <AnimatePresence>
@@ -253,21 +213,6 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Humble Footer Branding Row */}
-      <div className="w-full text-center mt-3 flex flex-col md:flex-row items-center justify-center gap-1.5 md:gap-4 text-slate-500 text-[11px] font-semibold">
-        <span>© 2026 Rayya Water Delivery. All rights reserved.</span>
-        <span className="hidden md:inline text-slate-700">•</span>
-        <span>Aplikasi Mitra Kurir & Pemesanan Mandiri</span>
-        <span className="hidden md:inline text-slate-700">•</span>
-        <button
-          onClick={() => alert("Rayya Water App v1.3.2. Menyediakan layanan air mineral segar pegunungan super higienis langsung ke pintu rumah Anda di Garut.")}
-          className="hover:text-slate-400 underline cursor-pointer"
-        >
-          Tentang Layanan
-        </button>
-      </div>
-
     </div>
   );
 }

@@ -4,19 +4,17 @@
  */
 
 import React, { useState } from "react";
-import { ArrowLeft, User, Lock, Eye, EyeOff, ChevronRight, Droplet, Sparkles } from "lucide-react";
+import { User, Lock, Eye, EyeOff, ChevronRight, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { CustomerProfile } from "../types";
 
 interface KurirLoginScreenProps {
-  onBack: () => void;
   onRegisterClick: () => void;
   onLoginSuccess: (kurirId: string) => void;
   registeredProfile: CustomerProfile | null;
 }
 
 export const KurirLoginScreen: React.FC<KurirLoginScreenProps> = ({
-  onBack,
   onRegisterClick,
   onLoginSuccess,
   registeredProfile,
@@ -89,14 +87,7 @@ export const KurirLoginScreen: React.FC<KurirLoginScreenProps> = ({
       className="flex-1 flex flex-col justify-between py-4 bg-gradient-to-b from-blue-50/50 to-white relative"
     >
       {/* 1. Header Bar */}
-      <div className="flex items-center gap-4 px-4 py-3 border-b border-slate-100 bg-white/90 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
-        <button
-          onClick={onBack}
-          className="p-1 rounded-full text-slate-700 hover:bg-slate-100 transition-colors"
-          id="kurir-login-back-btn"
-        >
-          <ArrowLeft className="w-5 h-5 text-brand-blue stroke-[2.5]" />
-        </button>
+      <div className="flex items-center justify-center px-4 py-3 border-b border-slate-100 bg-white/90 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
         <span className="text-[15px] font-semibold text-brand-blue">
           Login Pelanggan
         </span>

@@ -1,0 +1,6 @@
+{
+  "name": "Rayya Water",
+  "description": "A beautiful and fully functional Rayya Water Delivery application frontend matching the provided mockups.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

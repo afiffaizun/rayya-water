@@ -108,7 +108,6 @@ export default function App() {
     setOrders([newEntry, ...orders]);
     // Deduct stock
     setStockUnits((prev) => Math.max(0, prev - newOrder.qty));
-    triggerNotification(`💧 Pesanan ${randomId} terbuat!`);
   };
 
   const handleModifyStock = (amount: number) => {

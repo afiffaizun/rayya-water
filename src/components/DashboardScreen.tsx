@@ -34,6 +34,7 @@ import {
   CustomerProfile
 } from "../types";
 import { OrderDetailModal } from "./OrderDetailModal";
+import { PaymentScreen } from "./PaymentScreen";
 
 interface DashboardScreenProps {
   profile: CustomerProfile;
@@ -72,6 +73,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<ActiveOrder | null>(null);
+  const [pendingPaymentOrder, setPendingPaymentOrder] = useState<ActiveOrder | null>(null);
 
   const itemPrice = waterType === WaterType.REFILL ? 6000 : 18000;
   const totalPrice = qty * itemPrice;
@@ -118,7 +120,12 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
       date: dateStr,
       price: totalPrice,
     };
-    setSelectedOrder(newOrder);
+
+    if (paymentMethod === "Cash on Delivery") {
+      setSelectedOrder(newOrder);
+    } else {
+      setPendingPaymentOrder(newOrder);
+    }
     setQty(1);
   };
 
@@ -372,6 +379,20 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               setSelectedOrder(null);
               setCurrentTab(DashboardTab.HISTORY);
             }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Payment Screen */}
+      <AnimatePresence>
+        {pendingPaymentOrder && (
+          <PaymentScreen
+            order={pendingPaymentOrder}
+            onPaymentConfirmed={() => {
+              setSelectedOrder(pendingPaymentOrder);
+              setPendingPaymentOrder(null);
+            }}
+            onCancel={() => setPendingPaymentOrder(null)}
           />
         )}
       </AnimatePresence>

@@ -89,5 +89,4 @@ rayya-water/
         └── ControlPanel.tsx         # Panel kontrol demo
 ```
 
-
-### Ini adalah aplikasi SPA (Single Page Application) mobile-first untuk layanan pengantaran air galon. Menggunakan React 19 + TypeScript + Tailwind CSS 4 + Vite 6. State management menggunakan useState bawaan React (tanpa Redux/Zustand). Tidak ada database — semua data dikelola di memori.
+Ini adalah aplikasi SPA (Single Page Application) mobile-first untuk layanan pengantaran air galon. Menggunakan React 19 + TypeScript + Tailwind CSS 4 + Vite 6. State management menggunakan useState bawaan React (tanpa Redux/Zustand). Tidak ada database — semua data dikelola di memori.

@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Battery, Wifi, Signal, RefreshCw } from "lucide-react";
+import { Battery, Wifi, Signal } from "lucide-react";
 
 interface MobileFrameProps {
   children: React.ReactNode;

@@ -36,6 +36,7 @@ import {
 import { OrderDetailModal } from "./OrderDetailModal";
 import { OrderConfirmationModal } from "./OrderConfirmationModal";
 import { PaymentScreen } from "./PaymentScreen";
+import { OrderHistoryTab } from "./OrderHistoryTab";
 
 interface DashboardScreenProps {
   profile: CustomerProfile;
@@ -49,6 +50,7 @@ interface DashboardScreenProps {
   }) => void;
   onModifyStock: (units: number) => void;
   stockUnits: number;
+  onUpdateOrderStatus: (orderId: string, newStatus: ActiveOrder["status"]) => void;
   onBackToWelcome: () => void;
   onLogOut: () => void;
   currentTab: DashboardTab;
@@ -62,6 +64,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
   onPlaceOrder,
   onModifyStock,
   stockUnits,
+  onUpdateOrderStatus,
   onBackToWelcome,
   onLogOut,
   currentTab,
@@ -188,6 +191,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               exit={{ opacity: 0, y: -15 }}
               className="px-5 pt-4 space-y-4"
             >
+
               {/* 2. Top Banner Status Cards */}
               <div className="grid grid-cols-2 gap-3.5">
                 {/* Blue Card: Delivery Status */}
@@ -370,6 +374,13 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                 </div>
               </div>
             </motion.div>
+          ) : currentTab === DashboardTab.HISTORY ? (
+            <OrderHistoryTab
+              key="history-view"
+              orders={activeOrders}
+              onViewOrderDetail={(order) => setSelectedOrder(order)}
+              onUpdateOrderStatus={onUpdateOrderStatus}
+            />
           ) : (
             renderExtraTabsContent()
           )}
@@ -416,6 +427,10 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             onViewHistory={() => {
               setSelectedOrder(null);
               setCurrentTab(DashboardTab.HISTORY);
+            }}
+            onUpdateStatus={(newStatus) => {
+              onUpdateOrderStatus(selectedOrder.id, newStatus);
+              setSelectedOrder({ ...selectedOrder, status: newStatus });
             }}
           />
         )}

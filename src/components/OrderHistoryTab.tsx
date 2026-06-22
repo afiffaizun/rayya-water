@@ -4,15 +4,20 @@
  */
 
 import React from "react";
-import { Clock, Calendar, CheckCircle2, RefreshCw, PlusSquare, ArrowUpRight, HelpCircle } from "lucide-react";
+import { Clock, Calendar, CheckCircle2, RefreshCw, PlusSquare, ChevronRight, MapPin } from "lucide-react";
 import { motion } from "motion/react";
 import { ActiveOrder, WaterType } from "../types";
 
 interface OrderHistoryTabProps {
   orders: ActiveOrder[];
+  onViewOrderDetail: (order: ActiveOrder) => void;
+  onUpdateOrderStatus: (orderId: string, newStatus: ActiveOrder["status"]) => void;
 }
 
-export const OrderHistoryTab: React.FC<OrderHistoryTabProps> = ({ orders }) => {
+export const OrderHistoryTab: React.FC<OrderHistoryTabProps> = ({
+  orders,
+  onViewOrderDetail,
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -48,7 +53,8 @@ export const OrderHistoryTab: React.FC<OrderHistoryTabProps> = ({ orders }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm relative overflow-hidden"
+              onClick={() => onViewOrderDetail(order)}
+              className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm relative overflow-hidden cursor-pointer hover:border-[#0b5ce5]/30 hover:shadow-md transition-all active:scale-[0.98]"
             >
               {/* Top Row: Icon + Type & Status */}
               <div className="flex justify-between items-start mb-3">
@@ -74,7 +80,7 @@ export const OrderHistoryTab: React.FC<OrderHistoryTabProps> = ({ orders }) => {
                   </div>
                 </div>
 
-                {/* Status Pill matching mockup designs */}
+                {/* Status Pill */}
                 <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full tracking-wide shrink-0 ${
                   order.status === "In Transit"
                     ? "bg-[#005eff] text-white"
@@ -95,7 +101,7 @@ export const OrderHistoryTab: React.FC<OrderHistoryTabProps> = ({ orders }) => {
                   <span className="font-extrabold text-slate-700 block">{order.qty} Galon</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block font-medium">Metode Kertas</span>
+                  <span className="text-slate-400 block font-medium">Metode Bayar</span>
                   <span className="font-extrabold text-slate-700 block">{order.paymentMethod}</span>
                 </div>
                 <div>
@@ -112,17 +118,56 @@ export const OrderHistoryTab: React.FC<OrderHistoryTabProps> = ({ orders }) => {
                 </div>
               </div>
 
-              {/* Bottom Row helpful action context links */}
-              <div className="flex justify-between items-center mt-3 pt-1 text-[11px] font-bold">
-                <span className="text-emerald-500 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" /> Pembayaran Terkonfirmasi
+              {/* Mini Tracking Progress */}
+              {order.status !== "Completed" && (
+                <div className="mt-3 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    {["Processing", "In Transit", "Completed"].map((step, i) => {
+                      const steps = ["Processing", "In Transit", "Completed"];
+                      const currentIdx = steps.indexOf(order.status);
+                      const isDone = i <= currentIdx;
+                      return (
+                        <React.Fragment key={step}>
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 ${
+                            isDone
+                              ? "bg-emerald-500 text-white"
+                              : "bg-slate-100 text-slate-400 border border-slate-200"
+                          }`}>
+                            {isDone ? "✓" : i + 1}
+                          </div>
+                          {i < 2 && (
+                            <div className={`flex-1 h-[2px] rounded-full ${
+                              i < currentIdx ? "bg-emerald-400" : "bg-slate-200"
+                            }`} />
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                  <div className="flex justify-between mt-1 px-0.5">
+                    <span className="text-[8px] text-slate-400 font-medium w-5 text-center">Proses</span>
+                    <span className="text-[8px] text-slate-400 font-medium w-5 text-center">Kirim</span>
+                    <span className="text-[8px] text-slate-400 font-medium w-5 text-center">Selesai</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Bottom Row */}
+              <div className="flex justify-between items-center mt-2 pt-1 text-[11px] font-bold">
+                <span className={`flex items-center gap-1 ${
+                  order.status === "Completed" ? "text-emerald-500" : "text-[#0b5ce5]"
+                }`}>
+                  {order.status === "Completed" ? (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" /> Pesanan Selesai
+                    </>
+                  ) : (
+                    <>
+                      <MapPin className="w-3.5 h-3.5 stroke-[2.5]" /> Lacak Pesanan
+                    </>
+                  )}
                 </span>
-                <button
-                  onClick={() => alert(`Bantuan untuk Pesanan ${order.id}: Silakan hubungi CS WhatsApp melalui panel control.`)}
-                  className="text-slate-400 hover:text-slate-600 flex items-center gap-0.5"
-                >
-                  Bantuan <ArrowUpRight className="w-3 h-3" />
-                </button>
+                <ChevronRight className="w-4 h-4 text-slate-300" />
               </div>
             </motion.div>
           ))}

@@ -119,6 +119,15 @@ export default function App() {
     setStockUnits((prev) => Math.max(0, prev + amount));
   };
 
+  const handleUpdateOrderStatus = (orderId: string, newStatus: ActiveOrder["status"]) => {
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      )
+    );
+    triggerNotification(`📦 Status pesanan ${orderId} diperbarui ke "${newStatus}"`);
+  };
+
   const handleContactCS = () => {
     alert("Hubungi Customer Service: +62 832-3983-29239 (Garut Rayya Water Support)");
   };
@@ -191,6 +200,7 @@ export default function App() {
               onPlaceOrder={handlePlaceOrder}
               onModifyStock={handleModifyStock}
               stockUnits={stockUnits}
+              onUpdateOrderStatus={handleUpdateOrderStatus}
               onBackToWelcome={() => setCurrentTab(DashboardTab.HOME)}
               onLogOut={() => {
                 setLoggedAsKurirId(null);

@@ -26,20 +26,45 @@ interface OrderDetailModalProps {
   address: string;
   onClose: () => void;
   onViewHistory: () => void;
+  onUpdateStatus: (newStatus: ActiveOrder["status"]) => void;
 }
+
+const STATUS_STEPS = ["Processing", "In Transit", "Completed"] as const;
+
+const STATUS_LABELS: Record<string, string> = {
+  Processing: "Diproses",
+  "In Transit": "Dalam Perjalanan",
+  Completed: "Selesai",
+};
 
 export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   order,
   address,
   onClose,
   onViewHistory,
+  onUpdateStatus,
 }) => {
+  const currentStepIndex = STATUS_STEPS.indexOf(order.status as typeof STATUS_STEPS[number]);
+
   const estimatedTime =
     order.status === "Processing"
       ? "30-60 menit"
       : order.status === "In Transit"
       ? "10-20 menit"
       : "Tiba";
+
+  const getNextStatus = (): ActiveOrder["status"] | null => {
+    if (order.status === "In Transit") return "Completed";
+    return null;
+  };
+
+  const getActionButtonLabel = (): string | null => {
+    if (order.status === "In Transit") return "Pesanan Sampai";
+    return null;
+  };
+
+  const nextStatus = getNextStatus();
+  const actionLabel = getActionButtonLabel();
 
   return (
     <motion.div
@@ -67,16 +92,28 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
         {/* Success Header */}
         <div className="flex flex-col items-center text-center">
           <div className="relative mb-4">
-            <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30">
-              <Check className="w-8 h-8 text-white stroke-[3]" />
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg ${
+              order.status === "Completed"
+                ? "bg-emerald-500 shadow-emerald-500/30"
+                : "bg-[#005eff] shadow-blue-500/30"
+            }`}>
+              {order.status === "Completed" ? (
+                <Check className="w-8 h-8 text-white stroke-[3]" />
+              ) : (
+                <Truck className="w-8 h-8 text-white stroke-[2.5]" />
+              )}
             </div>
-            <div className="absolute inset-0 w-16 h-16 bg-emerald-400 rounded-full animate-ping opacity-20"></div>
+            <div className={`absolute inset-0 w-16 h-16 rounded-full animate-ping opacity-20 ${
+              order.status === "Completed" ? "bg-emerald-400" : "bg-blue-400"
+            }`}></div>
           </div>
           <h3 className="text-[20px] font-extrabold text-slate-800 tracking-tight">
-            Pesanan Berhasil!
+            {order.status === "Completed" ? "Pesanan Selesai!" : "Pesanan Berhasil!"}
           </h3>
           <p className="text-[12px] text-slate-400 mt-1 font-medium">
-            Pesanan Anda sedang diproses oleh kurir
+            {order.status === "Processing" && "Pesanan Anda sedang diproses, menunggu kurir mengirim"}
+            {order.status === "In Transit" && "Pesanan Anda sedang dalam perjalanan"}
+            {order.status === "Completed" && "Pesanan Anda telah berhasil dikirim"}
           </p>
         </div>
 
@@ -95,12 +132,66 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             }`}>
               {order.status === "Processing" && <span className="inline-block w-1.5 h-1.5 bg-amber-600 rounded-full mr-1 animate-pulse"></span>}
               {order.status === "In Transit" && <Truck className="w-3 h-3 inline mr-1" />}
-              {order.status}
+              {STATUS_LABELS[order.status] || order.status}
             </span>
           </div>
           <span className="text-[22px] font-extrabold tracking-tight block">
             {order.id}
           </span>
+        </div>
+
+        {/* Tracking Steps */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm space-y-4">
+          <h4 className="text-[13px] font-extrabold text-slate-800 flex items-center gap-1.5">
+            <Truck className="w-4 h-4 text-slate-500" /> Lacak Pesanan
+          </h4>
+          <div className="space-y-0">
+            {STATUS_STEPS.map((step, i) => {
+              const isDone = i < currentStepIndex;
+              const isCurrent = i === currentStepIndex;
+              const isLast = i === STATUS_STEPS.length - 1;
+              return (
+                <div key={step} className="flex gap-3">
+                  {/* Timeline line + dot */}
+                  <div className="flex flex-col items-center">
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 border-2 ${
+                      isDone
+                        ? "bg-emerald-500 border-emerald-500 text-white"
+                        : isCurrent
+                        ? "bg-[#0b5ce5] border-[#0b5ce5] text-white"
+                        : "bg-white border-slate-200 text-slate-400"
+                    }`}>
+                      {isDone ? (
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      ) : (
+                        i + 1
+                      )}
+                    </div>
+                    {!isLast && (
+                      <div className={`w-[2px] flex-1 min-h-[28px] rounded-full ${
+                        isDone ? "bg-emerald-400" : "bg-slate-200"
+                      }`} />
+                    )}
+                  </div>
+                  {/* Label */}
+                  <div className={`pb-4 ${isLast ? "pb-0" : ""}`}>
+                    <span className={`text-[12px] font-extrabold block ${
+                      isDone || isCurrent ? "text-slate-800" : "text-slate-400"
+                    }`}>
+                      {STATUS_LABELS[step]}
+                    </span>
+                    <span className={`text-[10.5px] block mt-0.5 ${
+                      isDone || isCurrent ? "text-slate-500" : "text-slate-300"
+                    }`}>
+                      {step === "Processing" && "Pesanan sedang disiapkan oleh penjual"}
+                      {step === "In Transit" && "Kirim sedang dalam perjalanan ke alamat Anda"}
+                      {step === "Completed" && "Pesanan telah diterima dengan baik"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Detail Item */}
@@ -181,19 +272,21 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
         </div>
 
         {/* Estimasi Pengiriman */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50/50 rounded-2xl border border-blue-100 p-4 flex items-center gap-3">
-          <div className="bg-[#005eff] p-2.5 rounded-xl">
-            <Clock className="w-5 h-5 text-white" />
+        {order.status !== "Completed" && (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50/50 rounded-2xl border border-blue-100 p-4 flex items-center gap-3">
+            <div className="bg-[#005eff] p-2.5 rounded-xl">
+              <Clock className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <span className="text-[11px] text-slate-400 font-bold block uppercase tracking-wider">
+                Estimasi Pengiriman
+              </span>
+              <span className="text-[16px] font-extrabold text-slate-800 block">
+                {estimatedTime}
+              </span>
+            </div>
           </div>
-          <div>
-            <span className="text-[11px] text-slate-400 font-bold block uppercase tracking-wider">
-              Estimasi Pengiriman
-            </span>
-            <span className="text-[16px] font-extrabold text-slate-800 block">
-              {estimatedTime}
-            </span>
-          </div>
-        </div>
+        )}
 
         {/* Support Link */}
         <div className="text-center pt-1">
@@ -211,17 +304,32 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
       {/* Bottom Buttons */}
       <div className="px-5 py-4 border-t border-slate-100 bg-white shrink-0 space-y-2">
-        <button
-          onClick={onViewHistory}
-          className="w-full h-11 rounded-xl bg-[#0b5ce5] hover:bg-blue-700 text-white font-bold text-[13px] flex items-center justify-center transition-all active:scale-[0.98] shadow-md shadow-blue-500/10"
-        >
-          Lihat Riwayat Pesanan
-        </button>
+        {actionLabel && nextStatus && (
+          <button
+            onClick={() => onUpdateStatus(nextStatus)}
+            className={`w-full h-11 rounded-xl text-white font-bold text-[13px] flex items-center justify-center transition-all active:scale-[0.98] shadow-md ${
+              nextStatus === "Completed"
+                ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/10"
+                : "bg-[#0b5ce5] hover:bg-blue-700 shadow-blue-500/10"
+            }`}
+          >
+            {nextStatus === "Completed" && <Check className="w-4 h-4 mr-1.5" />}
+            {actionLabel}
+          </button>
+        )}
+        {order.status === "Completed" && (
+          <button
+            onClick={onViewHistory}
+            className="w-full h-11 rounded-xl bg-[#0b5ce5] hover:bg-blue-700 text-white font-bold text-[13px] flex items-center justify-center transition-all active:scale-[0.98] shadow-md shadow-blue-500/10"
+          >
+            Lihat Riwayat Pesanan
+          </button>
+        )}
         <button
           onClick={onClose}
           className="w-full h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[13px] flex items-center justify-center transition-colors"
         >
-          Kembali ke Order
+          Kembali
         </button>
       </div>
     </motion.div>

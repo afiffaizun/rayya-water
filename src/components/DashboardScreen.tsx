@@ -227,12 +227,6 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                     <div className="bg-rose-50 text-rose-500 p-2 rounded-lg border border-rose-100">
                       <Trash2 className="w-5 h-5" />
                     </div>
-                    <button
-                      onClick={() => onModifyStock(5)}
-                      className="text-[10px] font-bold text-[#0b5ce5] bg-blue-50 px-1.5 py-0.5 rounded hover:bg-blue-100 transition-colors"
-                    >
-                      + Isi
-                    </button>
                   </div>
                   <div>
                     <span className="text-[11px] text-slate-400 font-medium block leading-none mb-1">
